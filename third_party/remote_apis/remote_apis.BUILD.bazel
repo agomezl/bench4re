@@ -23,6 +23,7 @@ proto_library(
         "@googleapis//google/longrunning:operations_proto",
         "@googleapis//google/rpc:status_proto",
         "@protobuf//:any_proto",
+        "@protobuf//:empty_proto",
         "@protobuf//:duration_proto",
         "@protobuf//:timestamp_proto",
         "@protobuf//:wrappers_proto",

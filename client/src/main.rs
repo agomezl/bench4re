@@ -1,7 +1,7 @@
 //! Minimal REv2 client: asks a remote execution endpoint for its capabilities.
 
-use remote_execution::build::bazel::remote::execution::v2::GetCapabilitiesRequest;
-use remote_execution::build::bazel::remote::execution::v2::capabilities_client::CapabilitiesClient;
+use remote_execution_proto::build::bazel::remote::execution::v2::GetCapabilitiesRequest;
+use remote_execution_proto::build::bazel::remote::execution::v2::capabilities_client::CapabilitiesClient;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
