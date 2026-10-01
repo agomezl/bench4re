@@ -1,0 +1,30 @@
+# BUILD file overlaid on github.com/bazelbuild/remote-apis.
+# Declares only the proto_library targets; language bindings live in //proto.
+
+load("@rules_proto//proto:defs.bzl", "proto_library")
+
+package(default_visibility = ["//visibility:public"])
+
+licenses(["notice"])
+
+exports_files(["LICENSE"])
+
+proto_library(
+    name = "semver_proto",
+    srcs = ["build/bazel/semver/semver.proto"],
+)
+
+proto_library(
+    name = "remote_execution_proto",
+    srcs = ["build/bazel/remote/execution/v2/remote_execution.proto"],
+    deps = [
+        ":semver_proto",
+        "@googleapis//google/api:annotations_proto",
+        "@googleapis//google/longrunning:operations_proto",
+        "@googleapis//google/rpc:status_proto",
+        "@protobuf//:any_proto",
+        "@protobuf//:duration_proto",
+        "@protobuf//:timestamp_proto",
+        "@protobuf//:wrappers_proto",
+    ],
+)

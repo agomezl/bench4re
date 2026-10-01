@@ -1,0 +1,92 @@
+"""bench4re: a benchmark for remote execution over the REv2 protocol."""
+
+module(name = "bench4re")
+
+bazel_dep(name = "platforms", version = "1.1.0")
+bazel_dep(name = "bazel_skylib", version = "1.9.2")
+bazel_dep(name = "rules_proto", version = "7.1.0")
+bazel_dep(name = "protobuf", version = "36.2")
+bazel_dep(name = "rules_rust", version = "0.74.0")
+bazel_dep(name = "rules_rust_prost", version = "0.74.0")
+
+# --- Protos -------------------------------------------------------------------
+#
+# Google's protos (google/api, google/rpc, google/longrunning) come from the
+# googleapis module on the BCR. The REv2 protos come straight from
+# bazelbuild/remote-apis, pinned to a commit. That repo has its own MODULE.bazel,
+# but depending on it as a module drags in gRPC C++, rules_go and
+# rules_foreign_cc just to read two .proto files, so we fetch the sources and
+# declare the proto_library targets ourselves (see third_party/remote_apis).
+bazel_dep(name = "googleapis", version = "0.0.0-20260929-28769825")
+
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+REMOTE_APIS_COMMIT = "adbf4a27c86fbea4a37637a6cbcacef372406fe7"
+
+http_archive(
+    name = "remote_apis",
+    build_file = "//third_party/remote_apis:remote_apis.BUILD.bazel",
+    sha256 = "5c01012175ee2b9baff7256f6ab6030525a23c5a5101b353005faa7fe1dcb95d",
+    strip_prefix = "remote-apis-" + REMOTE_APIS_COMMIT,
+    urls = ["https://github.com/bazelbuild/remote-apis/archive/%s.tar.gz" % REMOTE_APIS_COMMIT],
+)
+
+# --- Rust toolchain -----------------------------------------------------------
+
+rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
+rust.toolchain(
+    edition = "2024",
+    versions = ["1.97.0"],
+)
+use_repo(rust, "rust_toolchains")
+
+register_toolchains("@rust_toolchains//:all")
+
+# --- Third-party crates ---------------------------------------------------------
+
+crate = use_extension("@rules_rust//crate_universe:extensions.bzl", "crate")
+crate.spec(
+    package = "prost",
+    version = "0.14.4",
+)
+crate.spec(
+    package = "prost-types",
+    version = "0.14.4",
+)
+crate.spec(
+    package = "tonic",
+    version = "0.14.6",
+)
+crate.spec(
+    package = "tonic-prost",
+    version = "0.14.6",
+)
+crate.spec(
+    features = ["full"],
+    package = "tokio",
+    version = "1.53.1",
+)
+crate.spec(
+    package = "tokio-stream",
+    version = "0.1.19",
+)
+crate.spec(
+    package = "protoc-gen-prost",
+    version = "0.5.0",
+)
+crate.annotation(
+    crate = "protoc-gen-prost",
+    gen_binaries = ["protoc-gen-prost"],
+)
+crate.spec(
+    package = "protoc-gen-tonic",
+    version = "0.5.0",
+)
+crate.annotation(
+    crate = "protoc-gen-tonic",
+    gen_binaries = ["protoc-gen-tonic"],
+)
+crate.from_specs()
+use_repo(crate, "crates")
+
+register_toolchains("//proto:prost_toolchain")
