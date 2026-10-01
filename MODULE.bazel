@@ -8,6 +8,8 @@ bazel_dep(name = "rules_proto", version = "7.1.0")
 bazel_dep(name = "protobuf", version = "36.2")
 bazel_dep(name = "rules_rust", version = "0.74.0")
 bazel_dep(name = "rules_rust_prost", version = "0.74.0")
+bazel_dep(name = "aspect_rules_lint", version = "2.9.1")
+bazel_dep(name = "bazelrc-preset.bzl", version = "1.9.2")
 
 # --- Protos -------------------------------------------------------------------
 #
@@ -89,4 +91,4 @@ crate.annotation(
 crate.from_specs()
 use_repo(crate, "crates")
 
-register_toolchains("//proto:prost_toolchain")
+register_toolchains("//toolchains:prost_toolchain")

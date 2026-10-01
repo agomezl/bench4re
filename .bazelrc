@@ -1,15 +1,11 @@
-common --enable_bzlmod
-common --incompatible_strict_action_env
-common --enable_platform_specific_config
+# Import bazelrc presets
+import %workspace%/.global.bazelrc
 
 # Use the prebuilt protoc instead of compiling it from source.
 common --incompatible_enable_proto_toolchain_resolution
 common --@protobuf//bazel/toolchains:prefer_prebuilt_protoc
 
-# Clippy and rustfmt on every Rust target.
-build --aspects=@rules_rust//rust:defs.bzl%rust_clippy_aspect
-build --output_groups=+clippy_checks
-build --aspects=@rules_rust//rust:defs.bzl%rustfmt_aspect
-build --output_groups=+rustfmt_checks
+build:lint --aspects=//tools/lint:linters.bzl%clippy
+build:lint --output_groups=+lint_reports
 
 try-import %workspace%/user.bazelrc

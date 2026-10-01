@@ -1,0 +1,16 @@
+load("@bazelrc-preset.bzl", "bazelrc_preset")
+
+bazelrc_preset(
+    name = "bazelrc",
+    out_file = ".global.bazelrc",
+)
+
+alias(
+    name = "format",
+    actual = "//tools/format:format",
+)
+
+exports_files(
+    [".clippy.toml"],
+    visibility = ["//visibility:public"],
+)
