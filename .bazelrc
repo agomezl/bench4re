@@ -5,7 +5,11 @@ import %workspace%/.global.bazelrc
 common --incompatible_enable_proto_toolchain_resolution
 common --@protobuf//bazel/toolchains:prefer_prebuilt_protoc
 
-build:lint --aspects=//tools/lint:linters.bzl%clippy
-build:lint --output_groups=+lint_reports
+# Clippy via rules_rust's own aspect. Warnings are errors, so any finding fails
+# the build.
+build:lint --aspects=@rules_rust//rust:defs.bzl%rust_clippy_aspect
+build:lint --output_groups=+clippy_checks
+build:lint --@rules_rust//rust/settings:clippy.toml=//:.clippy.toml
+build:lint --@rules_rust//rust/settings:clippy_flag=-Dwarnings
 
 try-import %workspace%/user.bazelrc

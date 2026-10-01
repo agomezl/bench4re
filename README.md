@@ -21,7 +21,7 @@ bazel run //client -- grpc://localhost:8980 [instance_name]
 - `proto/` Rust (prost + tonic) bindings for REv2.
 - `toolchains/` the prost/tonic toolchain.
 - `client/` the benchmark client.
-- `tools/` lint (clippy aspect) and format targets.
+- `tools/` format targets (clippy runs via `--config=lint`, see `.bazelrc`).
 
 ## Common commands
 
@@ -41,3 +41,11 @@ checked in as a single file for Cargo the way burst does with `analysis_v2`.
 - Rust crates: edit the `crate.spec` entries in `MODULE.bazel`, then
   `CARGO_BAZEL_REPIN=1 bazel mod tidy`.
 - REv2 protos: bump `REMOTE_APIS_COMMIT` and its `sha256` in `MODULE.bazel`.
+
+## CI
+
+`.github/workflows/ci.yml` runs on pushes and PRs to `main`: it checks
+formatting (`bazel run //tools/format:format.check`), builds and tests
+everything (`bazel test //...`, which also checks `.global.bazelrc` is up to
+date), and runs clippy with `--config=lint` (warnings are errors). CI runs with
+`--config=ci`, so `MODULE.bazel.lock` must be up to date.
