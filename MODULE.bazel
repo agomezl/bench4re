@@ -21,16 +21,17 @@ bazel_dep(name = "bazelrc-preset.bzl", version = "1.9.2")
 # declare the proto_library targets ourselves (see third_party/remote_apis).
 bazel_dep(name = "googleapis", version = "0.0.0-20260929-28769825")
 
-http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+git_repository = use_repo_rule("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
-REMOTE_APIS_COMMIT = "adbf4a27c86fbea4a37637a6cbcacef372406fe7"
-
-http_archive(
+git_repository(
     name = "remote_apis",
     build_file = "//third_party/remote_apis:remote_apis.BUILD.bazel",
-    sha256 = "5c01012175ee2b9baff7256f6ab6030525a23c5a5101b353005faa7fe1dcb95d",
-    strip_prefix = "remote-apis-" + REMOTE_APIS_COMMIT,
-    urls = ["https://github.com/bazelbuild/remote-apis/archive/%s.tar.gz" % REMOTE_APIS_COMMIT],
+    commit = "adbf4a27c86fbea4a37637a6cbcacef372406fe7",
+    remote = "https://github.com/bazelbuild/remote-apis",
+    sparse_checkout_patterns = [
+        "build/bazel/semver/semver.proto",
+        "build/bazel/remote/execution/v2/remote_execution.proto",
+    ],
 )
 
 # --- Rust toolchain -----------------------------------------------------------
